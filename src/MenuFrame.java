@@ -3,15 +3,13 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
+import java.util.Vector;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 public class MenuFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -96,7 +94,24 @@ public class MenuFrame extends JFrame {
 
         // load dictionary from disk
         Dictionary.loadFromDisk();
+        showLastAddedTable(rootPane);
+    }
 
+    private void showLastAddedTable(JRootPane rootPane) {
+        List headings = new ArrayList();
+        headings.add("Word");
+        headings.add("Meaning");
+        List values = new ArrayList();
+        values.add("val1");
+        values.add("val2");
+        DefaultTableModel tableModel = new DefaultTableModel();
+        tableModel.addColumn("Languages");
+        tableModel.insertRow(0, new String[]{"CSS"});
+
+        JTable wordstable = new JTable(tableModel);
+
+        JScrollPane sp = new JScrollPane(wordstable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        rootPane.getContentPane().add(sp);
     }
 
     public void exit() {
