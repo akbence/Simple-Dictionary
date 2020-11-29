@@ -3,6 +3,7 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,24 +18,24 @@ public class DeleteWord extends JFrame{
     public DeleteWord() {
         super("Delete Word");
 
-        tfWord = new JTextField(20);
+        tfWord = new JTextField(30);
         btnDelete = new JButton("Delete");
-        btnDelete.addActionListener( new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                 if (  tfWord.getText().length() > 0 ) {
-                       boolean done = Dictionary.deleteWord(tfWord.getText());
-
-                 if (!done)
-                       JOptionPane.showMessageDialog( DeleteWord.this, "Word  Not Found. Please try again!","Delete Word", JOptionPane.INFORMATION_MESSAGE);
-                 else
-                       JOptionPane.showMessageDialog( DeleteWord.this, "Word  Deleted Successfully!","Delete Word", JOptionPane.INFORMATION_MESSAGE);
-                 }
-                 else
-                      JOptionPane.showMessageDialog( DeleteWord.this, "Please enter word from dictionary!","Add Word", JOptionPane.ERROR_MESSAGE);
-            }
-         }
+        btnDelete.addActionListener(e -> {
+                    if (tfWord.getText().length() > 0) {
+                        boolean done = true;
+                        try {
+                            DbHandler dbHandler = DbHandler.getDbHandler();
+                            dbHandler.deleteWord(tfWord.getText());
+                        } catch (SQLException throwables) {
+                            done = false;
+                        }
+                        if (!done)
+                            JOptionPane.showMessageDialog(DeleteWord.this, "Word  Not Found. Please try again!", "Delete Word", JOptionPane.INFORMATION_MESSAGE);
+                        else
+                            JOptionPane.showMessageDialog(DeleteWord.this, "Word  Deleted Successfully!", "Delete Word", JOptionPane.INFORMATION_MESSAGE);
+                    } else
+                        JOptionPane.showMessageDialog(DeleteWord.this, "Please enter word from dictionary!", "Add Word", JOptionPane.ERROR_MESSAGE);
+                }
         );
 
         Container c = getContentPane();

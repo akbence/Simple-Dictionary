@@ -1,8 +1,11 @@
 
+import model.DictionaryRow;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -98,16 +101,22 @@ public class MenuFrame extends JFrame {
     }
 
     private void showLastAddedTable(JRootPane rootPane) {
-        List headings = new ArrayList();
+        List<String> headings = new ArrayList<>();
         headings.add("Word");
         headings.add("Meaning");
-        List values = new ArrayList();
-        values.add("val1");
-        values.add("val2");
+        headings.add("Pronounciation");
+        headings.add("Source");
+        headings.add("Created");
+        DbHandler dbHandler = DbHandler.getDbHandler();
+        List<DictionaryRow> rows = dbHandler.getLatestWords(40);
         DefaultTableModel tableModel = new DefaultTableModel();
-        tableModel.addColumn("Languages");
-        tableModel.insertRow(0, new String[]{"CSS"});
-
+        headings.forEach(tableModel::addColumn);
+        int counter = 0;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        for (DictionaryRow row : rows) {
+            tableModel.insertRow(counter, new String[]{row.getWord(), row.getPronunciation(), row.getMeaning(), row.getSource(), formatter.format(row.getDateOfAdded())});
+            counter++;
+        }
         JTable wordstable = new JTable(tableModel);
 
         JScrollPane sp = new JScrollPane(wordstable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);

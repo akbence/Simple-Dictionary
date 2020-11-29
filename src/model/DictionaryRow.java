@@ -10,6 +10,9 @@ public class DictionaryRow {
     private String source;
     private LocalDateTime dateOfAdded;
 
+    public DictionaryRow() {
+    }
+
     public DictionaryRow(String word, String pronunciation, String meaning, String source) {
         this.word = word;
         this.pronunciation = pronunciation;

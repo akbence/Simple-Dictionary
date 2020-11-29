@@ -3,6 +3,9 @@ import model.DictionaryRow;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DbHandler {
     public static  Connection conn;
@@ -48,7 +51,7 @@ public class DbHandler {
     }
 
     public void persistWord(DictionaryRow row){
-        String sql = "INSERT INTO word(word,pronunciation,meaning,source,dateOfAdded) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO Dictionary(word,pronunciation,meaning,source,dateOfAdded) VALUES(?,?,?,?,?)";
 
         if( conn == null){
             connect();
@@ -62,6 +65,44 @@ public class DbHandler {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    public List<DictionaryRow> getLatestWords(int limit){
+        String sql = "SELECT word,pronunciation,meaning,source,dateOfAdded FROM Dictionary ORDER BY dateOfAdded LIMIT ?";
+        List<DictionaryRow> rows = new ArrayList<>();
+        if( conn == null){
+            connect();
+        }
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, limit);
+            ResultSet resultSet = pstmt.executeQuery();
+            while (resultSet.next()){
+                DictionaryRow row =  new DictionaryRow();
+                row.setWord(resultSet.getString("word"));
+                row.setPronunciation(resultSet.getString("pronunciation"));
+                row.setMeaning(resultSet.getString("meaning"));
+                row.setSource(resultSet.getString("source"));
+                row.setDateOfAdded(resultSet.getTimestamp("dateOfAdded").toLocalDateTime());
+                rows.add(row);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return rows;
+    }
+
+    public void deleteWord(String word) throws SQLException {
+        String sql = "DELETE FROM Dictionary WHERE word=?";
+        if( conn == null){
+            connect();
+        }
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, word);
+            pstmt.execute();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw e;
         }
     }
 

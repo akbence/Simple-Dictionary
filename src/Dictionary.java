@@ -5,6 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.TreeMap;
 
+
+//TODO: delete later, former logic from the github fork
+@Deprecated
 public class Dictionary {
 
     private static boolean modified = false;
