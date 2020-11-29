@@ -1,21 +1,26 @@
 
 import model.DictionaryRow;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
-import java.util.Vector;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
 public class MenuFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
+	private static JScrollPane mainWordstableScrollPane;
+    private JTextField tfCurrPage;
+    private JLabel maxPageLabel;
+    private static int currPage = 1;
+    private static int maxPage = 1;
+    private static int offset = 0;
+    private static int limit = 50;
     public MenuFrame() throws Exception {
         super("Dictionary");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -66,19 +71,6 @@ public class MenuFrame extends JFrame {
             }
         });
 
-
-        option = new JMenuItem("List Words");
-        option.setIcon( getImage("list.gif"));
-        option.setAccelerator( KeyStroke.getKeyStroke("F8"));
-        mnuDictionary.add(option);
-        option.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                listWords();
-            }
-        });
-
         mnuDictionary.addSeparator();
 
         option = new JMenuItem("Exit");
@@ -97,18 +89,22 @@ public class MenuFrame extends JFrame {
 
         // load dictionary from disk
         Dictionary.loadFromDisk();
-        showLastAddedTable(rootPane);
+        calcPagination();
+        showDictionaryTable(rootPane);
     }
 
-    private void showLastAddedTable(JRootPane rootPane) {
+    private void showDictionaryTable(JRootPane rootPane) {
         List<String> headings = new ArrayList<>();
         headings.add("Word");
         headings.add("Meaning");
         headings.add("Pronounciation");
         headings.add("Source");
         headings.add("Created");
+
         DbHandler dbHandler = DbHandler.getDbHandler();
-        List<DictionaryRow> rows = dbHandler.getLatestWords(40);
+        List<DictionaryRow> rows = dbHandler.getDictionaryRows(limit, offset);
+
+
         DefaultTableModel tableModel = new DefaultTableModel();
         headings.forEach(tableModel::addColumn);
         int counter = 0;
@@ -117,10 +113,11 @@ public class MenuFrame extends JFrame {
             tableModel.insertRow(counter, new String[]{row.getWord(), row.getPronunciation(), row.getMeaning(), row.getSource(), formatter.format(row.getDateOfAdded())});
             counter++;
         }
-        JTable wordstable = new JTable(tableModel);
+        JTable table = new JTable(tableModel);
+        mainWordstableScrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        rootPane.getContentPane().add(mainWordstableScrollPane);
+        rootPane.getContentPane().revalidate();
 
-        JScrollPane sp = new JScrollPane(wordstable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        rootPane.getContentPane().add(sp);
     }
 
     public void exit() {
@@ -180,12 +177,6 @@ public class MenuFrame extends JFrame {
         w.setVisible(true);
     }
 
-    public void listWords() {
-        ListWords w = new ListWords();
-        w.setVisible(true);
-        centerToParent(MenuFrame.this, w);
-    }
-
     public void addToolbar() {
         JToolBar tb = new JToolBar();
         JButton b = new JButton( getImage("add.gif"));
@@ -225,16 +216,10 @@ public class MenuFrame extends JFrame {
         });
 
 
-        b = new JButton( getImage("list.gif"));
+        b = new JButton( getImage("refresh.gif"));
         tb.add(b);
-        b.setToolTipText("List Words");
-        b.addActionListener( new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                 listWords();
-            }
-
-        });
+        b.setToolTipText("Refresh table");
+        b.addActionListener(e -> refreshMainTable());
 
         tb.addSeparator();
 
@@ -249,19 +234,59 @@ public class MenuFrame extends JFrame {
 
         });
 
-        b = new JButton( getImage("load.gif"));
-        tb.add(b);
-        b.setToolTipText("Load Dictionary From Disk");
-        b.addActionListener( new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                 Dictionary.loadFromDisk();
-            }
+        JPanel displayPanel =new JPanel( new GridBagLayout() );
+        b = new JButton("Go to Page:");
+        displayPanel.add(b);
+//        tb.add(b);
+        b.setToolTipText("Go to given page");
+        b.addActionListener(e -> refreshMainTable());
 
+        tfCurrPage = new JTextField(5);
+        //tfCurrPage.setPreferredSize( new Dimension(20,10));
+        tfCurrPage.setText("1");
+        tfCurrPage.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent ke) {
+                String value = tfCurrPage.getText();
+                int l = value.length();
+                if (ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') {
+                    tfCurrPage.setEditable(true);
+                } else {
+                    tfCurrPage.setText("");
+                }
+            }
         });
+        displayPanel.add(tfCurrPage);
+        tb.add(displayPanel);
+
+        maxPageLabel =new JLabel("Max page: " + maxPage);
+        displayPanel.add(maxPageLabel);
 
         getContentPane().add(tb, BorderLayout.NORTH);
     }
+
+    private void refreshMainTable() {
+        calcPagination();
+        rootPane.getContentPane().remove(mainWordstableScrollPane);
+        showDictionaryTable(rootPane);
+    }
+
+    private void calcPagination() {
+        if (tfCurrPage.getText().equals("")) {
+            currPage = 1;
+        } else {
+            currPage = Integer.parseInt(tfCurrPage.getText());
+        }
+        DbHandler dbHandler = DbHandler.getDbHandler();
+        int allWords = dbHandler.getDictionaryCount();
+        maxPage = allWords / limit + 1;
+        if (currPage > maxPage) {
+            currPage = maxPage;
+            tfCurrPage.setText(""+ currPage);
+        }
+        offset = limit * (currPage - 1);
+        maxPageLabel.setText("Max page: " + maxPage);
+    }
+
     //
     public void addStorageMenu(JMenuBar mb) {
 

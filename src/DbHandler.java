@@ -68,14 +68,15 @@ public class DbHandler {
         }
     }
 
-    public List<DictionaryRow> getLatestWords(int limit){
-        String sql = "SELECT word,pronunciation,meaning,source,dateOfAdded FROM Dictionary ORDER BY dateOfAdded LIMIT ?";
+    public List<DictionaryRow> getDictionaryRows(int limit, int offset){
+        String sql = "SELECT word,pronunciation,meaning,source,dateOfAdded FROM Dictionary ORDER BY dateOfAdded DESC LIMIT ? OFFSET ?";
         List<DictionaryRow> rows = new ArrayList<>();
         if( conn == null){
             connect();
         }
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, limit);
+            pstmt.setInt(2,offset);
             ResultSet resultSet = pstmt.executeQuery();
             while (resultSet.next()){
                 DictionaryRow row =  new DictionaryRow();
@@ -90,6 +91,23 @@ public class DbHandler {
             System.out.println(e.getMessage());
         }
         return rows;
+    }
+
+    public int getDictionaryCount(){
+        String sql = "SELECT COUNT (*) FROM Dictionary";
+        int result = 0;
+        if( conn == null){
+            connect();
+        }
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            ResultSet resultSet = pstmt.executeQuery();
+            while (resultSet.next()){
+                result =resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return result;
     }
 
     public void deleteWord(String word) throws SQLException {
