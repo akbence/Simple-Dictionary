@@ -48,6 +48,7 @@ public class CsvHandler {
                 dataLines.clear();
                 pageCounter++;
             }
+            System.out.println("Export done at: " + csvOutputFile.getAbsolutePath());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

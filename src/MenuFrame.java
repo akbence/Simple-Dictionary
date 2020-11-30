@@ -337,7 +337,7 @@ public class MenuFrame extends JFrame {
         }
         DbHandler dbHandler = DbHandler.getDbHandler();
         int allWords = dbHandler.getFilteredDictionaryCount(filterType, tfCurrFilter.getText());
-        maxPage = (int) Math.ceil(allWords / limit);
+        maxPage = (int) Math.ceil(allWords / (double) limit);
         if (currPage > maxPage) {
             currPage = maxPage;
             tfCurrPage.setText(""+ currPage);

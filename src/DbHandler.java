@@ -98,7 +98,6 @@ public class DbHandler {
                 pstmt.setInt(2 , limit);
                 pstmt.setInt(3 , offset);
             }
-            System.out.println(sql);
             ResultSet resultSet = pstmt.executeQuery();
             while (resultSet.next()) {
                 DictionaryRow row =  new DictionaryRow();
@@ -124,7 +123,7 @@ public class DbHandler {
             sql = "SELECT COUNT (*) FROM Dictionary WHERE meaning=? ";
         }
         if(filterType == FilterType.BOOKSOURCE){
-            sql = "SELECT COUNT (*) FROM Dictionary WHERE source LIKE ?";
+            sql = "SELECT COUNT (*) FROM Dictionary WHERE source LIKE ? ";
 
         }
         int result = 0;
@@ -136,9 +135,6 @@ public class DbHandler {
                 pstmt.setString(1 , filterWord + "%");
             }
             if (filterType == FilterType.MEANING || filterType == FilterType.PRONOUNCIATION){
-                pstmt.setString(1 , filterWord);
-            }
-            if (filterType != FilterType.NONE){
                 pstmt.setString(1 , filterWord);
             }
             ResultSet resultSet = pstmt.executeQuery();
