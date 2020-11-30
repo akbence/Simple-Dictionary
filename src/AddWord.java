@@ -36,7 +36,7 @@ public class AddWord extends JFrame {
         btnAdd = new JButton("Add Word");
         btnAdd.addActionListener(e -> {
                     if (tfWord.getText().length() > 0 && tfMeaning.getText().length() > 0) {
-                        DictionaryRow row = new DictionaryRow(tfWord.getText().trim(), tfPronunciation.getText().trim(), tfMeaning.getText().trim(), tfSourceBook.getText().trim() + ";" + tfSourceChapter.getText().trim());
+                        DictionaryRow row = new DictionaryRow(tfWord.getText().trim(), tfPronunciation.getText().trim(), tfMeaning.getText().trim(), tfSourceBook.getText().trim() + ":" + tfSourceChapter.getText().trim());
                         DbHandler dbHandler = DbHandler.getDbHandler();
                         dbHandler.persistWord(row);
                         JOptionPane.showMessageDialog(AddWord.this, "Added Word Successfully!", "Add Word", JOptionPane.INFORMATION_MESSAGE);

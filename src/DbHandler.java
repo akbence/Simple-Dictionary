@@ -136,7 +136,10 @@ public class DbHandler {
             if (filterType == FilterType.BOOKSOURCE){
                 pstmt.setString(1 , filterWord + "%");
             }
-            else if (filterType != FilterType.NONE){
+            if (filterType == FilterType.MEANING || filterType == FilterType.PRONOUNCIATION){
+                pstmt.setString(1 , filterWord);
+            }
+            if (filterType != FilterType.NONE){
                 pstmt.setString(1 , filterWord);
             }
             while (resultSet.next()){

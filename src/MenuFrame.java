@@ -116,7 +116,7 @@ public class MenuFrame extends JFrame {
         int counter = 0;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         for (DictionaryRow row : rows) {
-            tableModel.insertRow(counter, new String[]{row.getWord(), row.getPronunciation(), row.getMeaning(), row.getSource(), formatter.format(row.getDateOfAdded())});
+            tableModel.insertRow(counter, new String[]{row.getWord(), row.getMeaning(), row.getPronunciation(), row.getSource(), formatter.format(row.getDateOfAdded())});
             counter++;
         }
         JTable table = new JTable(tableModel);
@@ -229,16 +229,10 @@ public class MenuFrame extends JFrame {
 
         tb.addSeparator();
 
-        b = new JButton( getImage("save.gif"));
+        b = new JButton( getImage("csv.gif"));
         tb.add(b);
-        b.setToolTipText("Save Dictionary To Disk");
-        b.addActionListener( new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                 Dictionary.saveToDisk();
-            }
-
-        });
+        b.setToolTipText("Export to CSV");
+        b.addActionListener(e -> CsvHandler.exportDictionaryToCsv());
 
         JPanel displayPanel =new JPanel( new GridBagLayout() );
         b = new JButton("Go to Page:");
