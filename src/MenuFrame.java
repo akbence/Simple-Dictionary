@@ -89,7 +89,7 @@ public class MenuFrame extends JFrame {
             }
         });
 
-        addStorageMenu(mb);
+//        addStorageMenu(mb);
         addToolbar();
         setJMenuBar(mb);
 
@@ -337,7 +337,7 @@ public class MenuFrame extends JFrame {
         }
         DbHandler dbHandler = DbHandler.getDbHandler();
         int allWords = dbHandler.getFilteredDictionaryCount(filterType, tfCurrFilter.getText());
-        maxPage = allWords / limit + 1;
+        maxPage = (int) Math.ceil(allWords / limit);
         if (currPage > maxPage) {
             currPage = maxPage;
             tfCurrPage.setText(""+ currPage);
@@ -347,53 +347,53 @@ public class MenuFrame extends JFrame {
     }
 
     //
-    public void addStorageMenu(JMenuBar mb) {
-
-        JMenu mnuStorage = new JMenu("Storage");
-
-        // options in Storage Menu
-        JMenuItem option = new JMenuItem("Save Dictionary");
-        option.setIcon( getImage("save.gif"));
-        option.setAccelerator( KeyStroke.getKeyStroke("F2"));
-        mnuStorage.add(option);
-        option.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean result = Dictionary.saveToDisk();
-                if (result) {
-                    JOptionPane.showMessageDialog(MenuFrame.this, "Saved Dictionary Successfully!", "Feedback",
-                            JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(MenuFrame.this, "Could Not Save Dictionary Successfully! Error --> " + Dictionary.getMessage(), "Feedback",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        });
-
-
-        option = new JMenuItem("Load Dictionary");
-        option.setIcon( getImage("load.gif"));
-        option.setAccelerator( KeyStroke.getKeyStroke("F3"));
-        mnuStorage.add(option);
-        option.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean result = Dictionary.loadFromDisk();
-                if (result) {
-                    JOptionPane.showMessageDialog(MenuFrame.this, "Loaded Dictionary Successfully!", "Feedback",
-                            JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(MenuFrame.this, "Could Not Load Dictionary Successfully! Error --> " + Dictionary.getMessage(), "Feedback",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        });
-
-        mb.add(mnuStorage);
-
-    }
+//    public void addStorageMenu(JMenuBar mb) {
+//
+//        JMenu mnuStorage = new JMenu("Storage");
+//
+//        // options in Storage Menu
+//        JMenuItem option = new JMenuItem("Save Dictionary");
+//        option.setIcon( getImage("save.gif"));
+//        option.setAccelerator( KeyStroke.getKeyStroke("F2"));
+//        mnuStorage.add(option);
+//        option.addActionListener(new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                boolean result = Dictionary.saveToDisk();
+//                if (result) {
+//                    JOptionPane.showMessageDialog(MenuFrame.this, "Saved Dictionary Successfully!", "Feedback",
+//                            JOptionPane.INFORMATION_MESSAGE);
+//                } else {
+//                    JOptionPane.showMessageDialog(MenuFrame.this, "Could Not Save Dictionary Successfully! Error --> " + Dictionary.getMessage(), "Feedback",
+//                            JOptionPane.INFORMATION_MESSAGE);
+//                }
+//            }
+//        });
+//
+//
+//        option = new JMenuItem("Load Dictionary");
+//        option.setIcon( getImage("load.gif"));
+//        option.setAccelerator( KeyStroke.getKeyStroke("F3"));
+//        mnuStorage.add(option);
+//        option.addActionListener(new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                boolean result = Dictionary.loadFromDisk();
+//                if (result) {
+//                    JOptionPane.showMessageDialog(MenuFrame.this, "Loaded Dictionary Successfully!", "Feedback",
+//                            JOptionPane.INFORMATION_MESSAGE);
+//                } else {
+//                    JOptionPane.showMessageDialog(MenuFrame.this, "Could Not Load Dictionary Successfully! Error --> " + Dictionary.getMessage(), "Feedback",
+//                            JOptionPane.INFORMATION_MESSAGE);
+//                }
+//            }
+//        });
+//
+//        mb.add(mnuStorage);
+//
+//    }
 
     public static void main(String[] args) throws Exception {
         MenuFrame f = new MenuFrame();

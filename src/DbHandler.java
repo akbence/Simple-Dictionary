@@ -28,7 +28,7 @@ public class DbHandler {
             Path currentRelativePath = Paths.get("");
             String urlVariable = currentRelativePath.toAbsolutePath().toString();
             String backslashChanged= urlVariable.replaceAll("\\\\", "/");
-            String url = "jdbc:sqlite:"+ backslashChanged +  "/resources/sqlite.db";
+            String url = "jdbc:sqlite:"+ backslashChanged +  "/sqlite.db";
             System.out.println("PATH :  "+ url);
             conn = DriverManager.getConnection(url);
 
@@ -132,7 +132,6 @@ public class DbHandler {
             connect();
         }
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            ResultSet resultSet = pstmt.executeQuery();
             if (filterType == FilterType.BOOKSOURCE){
                 pstmt.setString(1 , filterWord + "%");
             }
@@ -142,6 +141,7 @@ public class DbHandler {
             if (filterType != FilterType.NONE){
                 pstmt.setString(1 , filterWord);
             }
+            ResultSet resultSet = pstmt.executeQuery();
             while (resultSet.next()){
                 result =resultSet.getInt(1);
             }
