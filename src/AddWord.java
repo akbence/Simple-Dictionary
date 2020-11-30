@@ -16,7 +16,8 @@ public class AddWord extends JFrame {
     private JTextField tfWord;
     private JTextField tfPronunciation;
     private JTextField tfMeaning;
-    private JTextField tfSource;
+    private JTextField tfSourceBook;
+    private JTextField tfSourceChapter;
     private JButton btnAdd;
 
     public AddWord() {
@@ -30,18 +31,20 @@ public class AddWord extends JFrame {
         tfWord = new JTextField(60);
         tfPronunciation = new JTextField(60);
         tfMeaning = new JTextField(40);
-        tfSource = new JTextField(50);
+        tfSourceBook = new JTextField(50);
+        tfSourceChapter = new JTextField(50);
         btnAdd = new JButton("Add Word");
         btnAdd.addActionListener(e -> {
                     if (tfWord.getText().length() > 0 && tfMeaning.getText().length() > 0) {
-                        DictionaryRow row = new DictionaryRow(tfWord.getText(), tfPronunciation.getText(), tfMeaning.getText(), tfSource.getText());
+                        DictionaryRow row = new DictionaryRow(tfWord.getText().trim(), tfPronunciation.getText().trim(), tfMeaning.getText().trim(), tfSourceBook.getText().trim() + ";" + tfSourceChapter.getText().trim());
                         DbHandler dbHandler = DbHandler.getDbHandler();
                         dbHandler.persistWord(row);
                         JOptionPane.showMessageDialog(AddWord.this, "Added Word Successfully!", "Add Word", JOptionPane.INFORMATION_MESSAGE);
                         tfWord.setText("");
                         tfPronunciation.setText("");
                         tfMeaning.setText("");
-                        tfSource.setText("");
+                        tfSourceBook.setText("");
+                        tfSourceChapter.setText("");
                         tfWord.requestFocus();
                     } else {
                         JOptionPane.showMessageDialog(AddWord.this, "Please enter word and meaning!", "Add Word", JOptionPane.ERROR_MESSAGE);
@@ -75,12 +78,19 @@ public class AddWord extends JFrame {
         c.add(tfMeaning, gbc);
 
 
-        // add taSource
+        // add taSource-Book
         gbc.anchor = GridBagConstraints.EAST;
         gbc.gridy++;
-        c.add(new JLabel("Enter Source :"), gbc);
+        c.add(new JLabel("Enter source (book) :"), gbc);
         gbc.anchor = GridBagConstraints.WEST;
-        c.add(tfSource, gbc);
+        c.add(tfSourceBook, gbc);
+
+        // add taSource-Book
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridy++;
+        c.add(new JLabel("Enter source (chapter) :"), gbc);
+        gbc.anchor = GridBagConstraints.WEST;
+        c.add(tfSourceChapter, gbc);
 
 
         // add button

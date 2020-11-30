@@ -124,13 +124,26 @@ public class DbHandler {
         }
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        connect();
-
+    public DictionaryRow findDictRowByWord(String word){
+        String sql = "SELECT word,pronunciation,meaning,source,dateOfAdded FROM Dictionary where word = ?";
+        DictionaryRow row = null;
+        if( conn == null){
+            connect();
+        }
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, word);
+            ResultSet resultSet = pstmt.executeQuery();
+            while (resultSet.next()){
+                row = new DictionaryRow();
+                row.setWord(resultSet.getString("word"));
+                row.setPronunciation(resultSet.getString("pronunciation"));
+                row.setMeaning(resultSet.getString("meaning"));
+                row.setSource(resultSet.getString("source"));
+                row.setDateOfAdded(resultSet.getTimestamp("dateOfAdded").toLocalDateTime());
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return row;
     }
-
-
 }
