@@ -7,13 +7,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 public class SearchWord extends JFrame{
 	private static final long serialVersionUID = 1L;
@@ -32,10 +26,10 @@ public class SearchWord extends JFrame{
         gbc.insets = new Insets(5,5,5,5);
         gbc.fill = GridBagConstraints.BOTH;
 
-        tfWord = new JTextField(20);
-        tfMeaning = new JTextField();
-        tfPronunciation = new JTextField();
-        tfSource = new JTextField();
+        tfWord = new JTextField(30);
+        tfMeaning = new JTextField(30);
+        tfPronunciation = new JTextField(30);
+        tfSource = new JTextField(30);
         btnSearch = new JButton("Search");
         btnSearch.addActionListener( new ActionListener() {
 
@@ -61,16 +55,63 @@ public class SearchWord extends JFrame{
         Container c = getContentPane();
         c.setLayout(gbl);
 
+//        JRadioButton wordButton = new JRadioButton("Word");
+//        wordButton.setVisible(true);
+//        wordButton.setActionCommand("word");
+//        wordButton.setSelected(true);
+//
+//        JRadioButton meaningButton = new JRadioButton("Meaning");
+//        wordButton.setActionCommand("Meaning");
+//
+//        JRadioButton pronunciationButton = new JRadioButton("Pronunciation");
+//        wordButton.setActionCommand("Pronunciation");
+//
+//
+//        JRadioButton bookButton = new JRadioButton("Source: book");
+//        wordButton.setActionCommand("Source: book");
+//
+//        ButtonGroup buttonGroup = new ButtonGroup();
+//        buttonGroup.add(wordButton);
+//        buttonGroup.add(meaningButton);
+//        buttonGroup.add(pronunciationButton);
+//        buttonGroup.add(bookButton);
+//
+//        Box radioButtonBox = Box.createHorizontalBox();
+//        radioButtonBox.add(wordButton);
+//        radioButtonBox.add(meaningButton);
+//        radioButtonBox.add(pronunciationButton);
+//        radioButtonBox.add(bookButton);
+//
+//        gbc.anchor = GridBagConstraints.EAST;
+//        JPanel radioButtonPanel = new JPanel();
+//        BoxLayout radioButtonPanelBoxLayout = new BoxLayout(radioButtonPanel,BoxLayout.X_AXIS);
+//        radioButtonPanel.setLayout(radioButtonPanelBoxLayout);
+//        radioButtonPanel.add(wordButton);
+//        radioButtonPanel.add(meaningButton);
+//        radioButtonPanel.add(pronunciationButton);
+//        radioButtonPanel.add(bookButton);
+//        gbc.gridy = 0;
+//        c.add(radioButtonPanel,gbc);
+        gbc.anchor = GridBagConstraints.EAST;
+        c.add(btnSearch);
+
+
         // add tfWord
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.EAST;
-        c.add( new JLabel("Search Word :"),gbc);
+        c.add( new JLabel("Search by word :"),gbc);
         gbc.anchor = GridBagConstraints.WEST;
-        c.add(tfWord);
-        gbc.anchor = GridBagConstraints.EAST;
-        c.add( btnSearch);
+        gbc.gridx = 1;
+        gbc.gridwidth = 2;
+        gbc.gridheight = 2;
+        tfWord.setColumns(30);
+        sp = new JScrollPane(tfWord, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        c.add(sp, gbc);
 
 
         // add tfMeaning
+        gbc.gridy = 2;
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.EAST;
         c.add( new JLabel("Meaning :"), gbc);
@@ -83,6 +124,7 @@ public class SearchWord extends JFrame{
         c.add(sp, gbc);
 
         // add tfPronunciation
+        gbc.gridy = 4;
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.EAST;
         c.add( new JLabel("Pronunciation :"), gbc);
@@ -95,6 +137,7 @@ public class SearchWord extends JFrame{
         c.add(sp, gbc);
 
         // add tfSource
+        gbc.gridy = 6;
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.EAST;
         c.add( new JLabel("Source :"), gbc);
@@ -108,5 +151,4 @@ public class SearchWord extends JFrame{
 
         pack(); // get requried size based on components
     }
-
 }

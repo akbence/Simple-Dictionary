@@ -68,17 +68,39 @@ public class DbHandler {
         }
     }
 
-    public List<DictionaryRow> getDictionaryRows(int limit, int offset){
+    public List<DictionaryRow> getDictionaryRows(int limit, int offset, FilterType filterType, String filterWord){
         String sql = "SELECT word,pronunciation,meaning,source,dateOfAdded FROM Dictionary ORDER BY dateOfAdded DESC LIMIT ? OFFSET ?";
+        if(filterType == FilterType.PRONOUNCIATION){
+            sql = "SELECT word,pronunciation,meaning,source,dateOfAdded FROM Dictionary WHERE pronunciation=? ORDER BY dateOfAdded DESC LIMIT ? OFFSET ?";
+        }
+        if(filterType == FilterType.MEANING){
+            sql = "SELECT word,pronunciation,meaning,source,dateOfAdded FROM Dictionary WHERE meaning=? ORDER BY dateOfAdded DESC LIMIT ? OFFSET ?";
+        }
+        if(filterType == FilterType.BOOKSOURCE){
+            sql = "SELECT word,pronunciation,meaning,source,dateOfAdded FROM Dictionary WHERE source LIKE ? ORDER BY dateOfAdded DESC LIMIT ? OFFSET ?";
+        }
         List<DictionaryRow> rows = new ArrayList<>();
         if( conn == null){
             connect();
         }
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, limit);
-            pstmt.setInt(2,offset);
+            if(filterType == FilterType.NONE){
+                pstmt.setInt(1 , limit);
+                pstmt.setInt(2 , offset);
+            }
+            else if (filterType == FilterType.BOOKSOURCE){
+                pstmt.setString(1 , filterWord + "%");
+                pstmt.setInt(2 , limit);
+                pstmt.setInt(3 , offset);
+            }
+            else {
+                pstmt.setString(1 , filterWord);
+                pstmt.setInt(2 , limit);
+                pstmt.setInt(3 , offset);
+            }
+            System.out.println(sql);
             ResultSet resultSet = pstmt.executeQuery();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 DictionaryRow row =  new DictionaryRow();
                 row.setWord(resultSet.getString("word"));
                 row.setPronunciation(resultSet.getString("pronunciation"));
@@ -93,14 +115,30 @@ public class DbHandler {
         return rows;
     }
 
-    public int getDictionaryCount(){
+    public int getFilteredDictionaryCount(FilterType filterType, String filterWord){
         String sql = "SELECT COUNT (*) FROM Dictionary";
+        if(filterType == FilterType.PRONOUNCIATION){
+            sql = "SELECT COUNT (*) FROM Dictionary WHERE pronunciation=? ";
+        }
+        if(filterType == FilterType.MEANING){
+            sql = "SELECT COUNT (*) FROM Dictionary WHERE meaning=? ";
+        }
+        if(filterType == FilterType.BOOKSOURCE){
+            sql = "SELECT COUNT (*) FROM Dictionary WHERE source LIKE ?";
+
+        }
         int result = 0;
         if( conn == null){
             connect();
         }
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             ResultSet resultSet = pstmt.executeQuery();
+            if (filterType == FilterType.BOOKSOURCE){
+                pstmt.setString(1 , filterWord + "%");
+            }
+            else if (filterType != FilterType.NONE){
+                pstmt.setString(1 , filterWord);
+            }
             while (resultSet.next()){
                 result =resultSet.getInt(1);
             }

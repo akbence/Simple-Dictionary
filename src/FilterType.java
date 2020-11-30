@@ -1,0 +1,3 @@
+public enum FilterType {
+    NONE,PRONOUNCIATION, MEANING, BOOKSOURCE
+}

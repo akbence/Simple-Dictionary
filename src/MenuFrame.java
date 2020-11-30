@@ -16,11 +16,17 @@ public class MenuFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private static JScrollPane mainWordstableScrollPane;
     private JTextField tfCurrPage;
+    private JTextField tfCurrFilter;
     private JLabel maxPageLabel;
+    private JRadioButton noneButton;
+    private JRadioButton meaningButton;
+    private JRadioButton pronunciationButton;
+    private JRadioButton bookButton;
     private static int currPage = 1;
     private static int maxPage = 1;
     private static int offset = 0;
     private static int limit = 50;
+    private FilterType filterType = FilterType.NONE;
     public MenuFrame() throws Exception {
         super("Dictionary");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -102,7 +108,7 @@ public class MenuFrame extends JFrame {
         headings.add("Created");
 
         DbHandler dbHandler = DbHandler.getDbHandler();
-        List<DictionaryRow> rows = dbHandler.getDictionaryRows(limit, offset);
+        List<DictionaryRow> rows = dbHandler.getDictionaryRows(limit, offset, filterType, tfCurrFilter.getText());
 
 
         DefaultTableModel tableModel = new DefaultTableModel();
@@ -237,7 +243,6 @@ public class MenuFrame extends JFrame {
         JPanel displayPanel =new JPanel( new GridBagLayout() );
         b = new JButton("Go to Page:");
         displayPanel.add(b);
-//        tb.add(b);
         b.setToolTipText("Go to given page");
         b.addActionListener(e -> refreshMainTable());
 
@@ -256,12 +261,72 @@ public class MenuFrame extends JFrame {
             }
         });
         displayPanel.add(tfCurrPage);
-        tb.add(displayPanel);
 
         maxPageLabel =new JLabel("Max page: " + maxPage);
         displayPanel.add(maxPageLabel);
+        tb.add(displayPanel);
+
+        JPanel filterPanel =new JPanel( new GridBagLayout() );
+        b = new JButton("Filter:");
+        b.setToolTipText("Enter Filter");
+        b.addActionListener(e -> setFiltering());
+        filterPanel.add(b);
+
+        tfCurrFilter = new JTextField(30);
+        //tfCurrPage.setPreferredSize( new Dimension(20,10));
+        tfCurrFilter.setText("");
+        filterPanel.add(tfCurrFilter);
+        //RADIOBUTTON
+        noneButton = new JRadioButton("None");
+        noneButton.setVisible(true);
+        noneButton.setActionCommand("word");
+        noneButton.setSelected(true);
+
+        meaningButton = new JRadioButton("Meaning");
+        noneButton.setActionCommand("Meaning");
+
+        pronunciationButton = new JRadioButton("Pronunciation");
+        noneButton.setActionCommand("Pronunciation");
+
+
+        bookButton = new JRadioButton("Source: book");
+        noneButton.setActionCommand("Source: book");
+
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(noneButton);
+        buttonGroup.add(meaningButton);
+        buttonGroup.add(pronunciationButton);
+        buttonGroup.add(bookButton);
+
+        JPanel radioButtonPanel = new JPanel();
+        BoxLayout radioButtonPanelBoxLayout = new BoxLayout(radioButtonPanel,BoxLayout.X_AXIS);
+        radioButtonPanel.setLayout(radioButtonPanelBoxLayout);
+        radioButtonPanel.add(noneButton);
+        radioButtonPanel.add(meaningButton);
+        radioButtonPanel.add(pronunciationButton);
+        radioButtonPanel.add(bookButton);
+
+        filterPanel.add(radioButtonPanel);
+        tb.add(filterPanel);
 
         getContentPane().add(tb, BorderLayout.NORTH);
+    }
+
+    private void setFiltering() {
+        if(noneButton.isSelected()){
+            filterType = FilterType.NONE;
+        }
+        if(meaningButton.isSelected()){
+            filterType = FilterType.MEANING;
+        }
+        if(pronunciationButton.isSelected()){
+            filterType = FilterType.PRONOUNCIATION;
+        }
+        if(bookButton.isSelected()){
+            filterType = FilterType.BOOKSOURCE;
+        }
+        refreshMainTable();
+        calcPagination();
     }
 
     private void refreshMainTable() {
@@ -277,7 +342,7 @@ public class MenuFrame extends JFrame {
             currPage = Integer.parseInt(tfCurrPage.getText());
         }
         DbHandler dbHandler = DbHandler.getDbHandler();
-        int allWords = dbHandler.getDictionaryCount();
+        int allWords = dbHandler.getFilteredDictionaryCount(filterType, tfCurrFilter.getText());
         maxPage = allWords / limit + 1;
         if (currPage > maxPage) {
             currPage = maxPage;
