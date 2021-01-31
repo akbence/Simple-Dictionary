@@ -18,7 +18,7 @@ Java (this project build with JDK 11)
 
 ## How to use
 
-1. Download the latest release: [Release v1.0](https://github.com/akbence/Simple-Dictionary/releases/download/v1.0/dictionary_v1.0.zip)
+1. Download the latest release: [Release v1.0](https://github.com/akbence/Simple-Dictionary/releases/download/v1.1/dictionary_v1.1.zip)
 2. Extract the files into a directory
 3. If you running on Windows, just run the _szotar.bat_ file
 4. If you dont like bat files, or you running other distro, just run this, inside the project folder: _java -jar dictionary.jar_
