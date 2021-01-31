@@ -1,9 +1,8 @@
 import model.DictionaryRow;
 
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,7 @@ public class CsvHandler {
         File csvOutputFile = new File("ExportDictionary" + ldt.getYear() + ldt.getMonthValue() + ldt.getDayOfMonth() + ".csv");
 
         List<String[]> dataLines = new ArrayList<>();
-        try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
+        try (PrintWriter pw = new PrintWriter(csvOutputFile, StandardCharsets.UTF_8)) {
             int pageCounter = 1;
             while (pageCounter <= wordCount / limit + 1) {
                 List<DictionaryRow> rows = dbHandler.getDictionaryRows(limit, (pageCounter - 1) * limit, FilterType.NONE, "");
@@ -49,7 +48,9 @@ public class CsvHandler {
                 pageCounter++;
             }
             System.out.println("Export done at: " + csvOutputFile.getAbsolutePath());
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | UnsupportedEncodingException e ) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
